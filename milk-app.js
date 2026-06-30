@@ -1,6 +1,6 @@
 // ==================== MANISH MILK PARLOUR — Shared Config ====================
 // After deploying your GAS Web App, paste the URL below:
-const GAS_URL = 'YOUR_GAS_WEB_APP_URL_HERE';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbwtBDLtwNAboZhhOTpqyIQHtCOeSh1ANOm89kGppGshpGri4XTK_1LarWYIC-DOxtvW/exec';
 
 // ==================== API HELPER ====================
 async function apiGet(params) {
