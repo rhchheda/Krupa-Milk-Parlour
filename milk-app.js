@@ -1,22 +1,38 @@
 // ==================== MANISH MILK PARLOUR — Shared Config ====================
 // After deploying your GAS Web App, paste the URL below:
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbwtBDLtwNAboZhhOTpqyIQHtCOeSh1ANOm89kGppGshpGri4XTK_1LarWYIC-DOxtvW/exec';
+const GAS_URL = 'YOUR_GAS_WEB_APP_URL_HERE';
 
 // ==================== API HELPER ====================
+function _gasUrlCheck() {
+  if (!GAS_URL || GAS_URL.includes('YOUR_GAS')) throw new Error('GAS_URL not configured. Open milk-app.js and paste your Google Apps Script Web App URL.');
+}
+
+async function _parseResponse(res) {
+  const text = await res.text();
+  try { return JSON.parse(text); }
+  catch (_) {
+    // GAS returned HTML (auth error, wrong deployment settings)
+    if (text.includes('google.com/accounts') || text.includes('SignIn')) throw new Error('GAS requires sign-in. Redeploy Web App with "Who has access: Anyone".');
+    throw new Error('GAS returned non-JSON. Check: Deploy → Manage Deployments → Who has access = Anyone.');
+  }
+}
+
 async function apiGet(params) {
+  _gasUrlCheck();
   const url = GAS_URL + '?' + new URLSearchParams(params).toString();
   const res = await fetch(url);
-  return res.json();
+  return _parseResponse(res);
 }
 
 async function apiPost(action, data, token) {
+  _gasUrlCheck();
   const url = GAS_URL + '?action=' + action + (token ? '&token=' + token : '');
   const res = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ action, token, ...data })
   });
-  return res.json();
+  return _parseResponse(res);
 }
 
 // ==================== SESSION HELPERS ====================

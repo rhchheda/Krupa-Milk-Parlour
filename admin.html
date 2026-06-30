@@ -736,7 +736,7 @@ function initBillMonthSelects() {
     if (i + 1 === billViewMonth) opt.selected = true;
     mSel.appendChild(opt);
   });
-  for (let y = now.getFullYear(); y >= now.getFullYear() - 2; y--) {
+  for (let y = now.getFullYear(); y >= now.getFullYear() - 5; y--) {
     const opt = document.createElement('option');
     opt.value = y; opt.textContent = y;
     if (y === billViewYear) opt.selected = true;
