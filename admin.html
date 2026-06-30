@@ -1055,7 +1055,12 @@ async function loadEODSummary() {
       </div>`;
     }
     document.getElementById('eodBody').innerHTML = html;
-  } catch (_) { document.getElementById('eodBody').innerHTML = '<div class="mp-alert mp-alert-danger">Failed to load.</div>'; }
+  } catch (e) {
+    const isUrlMissing = typeof GAS_URL === 'undefined' || GAS_URL.includes('YOUR_GAS');
+    document.getElementById('eodBody').innerHTML = isUrlMissing
+      ? '<div class="mp-alert mp-alert-warning">⚙️ GAS_URL not configured. Open <strong>milk-app.js</strong> and paste your Google Apps Script Web App URL.</div>'
+      : `<div class="mp-alert mp-alert-danger">Failed to load EOD summary. Check GAS deployment and try again.<br><small style="opacity:0.7;">${e.message||''}</small></div>`;
+  }
 }
 
 async function sendEODReport() {
