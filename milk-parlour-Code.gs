@@ -470,7 +470,7 @@ function customerLogin(phone, pin) {
   if (!phone || !pin) return json({ success:false, error:'Phone and PIN required' });
   const data = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Customers')?.getDataRange().getValues() || [];
   for (let i = 1; i < data.length; i++) {
-    if (String(data[i][2]) === String(phone) && data[i][11] === 'TRUE' && sha256_(String(pin)) === String(data[i][10])) {
+    if (String(data[i][2]) === String(phone) && String(data[i][11]).toUpperCase() === 'TRUE' && sha256_(String(pin)) === String(data[i][10])) {
       return json({ success:true, token: issueToken_('customer', data[i][0]), customerId: data[i][0], name: data[i][1] });
     }
   }
@@ -676,7 +676,7 @@ function getRoute(token, date) {
       };
     }
   }
-  const route = custData.slice(1).filter(r=>r[11]==='TRUE').map(r=>({
+  const route = custData.slice(1).filter(r=>String(r[11]).toUpperCase()==='TRUE').map(r=>({
     customerId:String(r[0]), name:r[1], phone:r[2], address:r[4], shift:r[5],
     defaultBrand:r[6], defaultQuality:r[7], defaultMilkQty:r[8], defaultCurdQty:r[9],
     requestedOrder:requestedOrders[String(r[0])]||null,
@@ -789,7 +789,7 @@ function getAdminDashboard(token) {
   const billData  = ss.getSheetByName('Bills')?.getDataRange().getValues()||[];
   const regData   = ss.getSheetByName('Registrations')?.getDataRange().getValues()||[];
   let totalCustomers=0,activeCustomers=0;
-  for(let i=1;i<custData.length;i++){if(!custData[i][0])continue;totalCustomers++;if(custData[i][11]==='TRUE')activeCustomers++;}
+  for(let i=1;i<custData.length;i++){if(!custData[i][0])continue;totalCustomers++;if(String(custData[i][11]).toUpperCase()==='TRUE')activeCustomers++;}
   let todayDeliveries=0,todayMissed=0,monthDeliveries=0,monthMilkLtrs=0;
   for(let i=1;i<delivData.length;i++){
     if(!delivData[i][0])continue;
@@ -830,7 +830,7 @@ function generateBills(token, month, year) {
   for(let i=existing.length-1;i>=1;i--){if(parseInt(existing[i][5])===m&&parseInt(existing[i][6])===y)billSheet.deleteRow(i+1);}
   const generated=[];
   for(let ci=1;ci<custData.length;ci++){
-    if(!custData[ci][0]||custData[ci][11]!=='TRUE')continue;
+    if(!custData[ci][0]||String(custData[ci][11]).toUpperCase()!=='TRUE')continue;
     const custId=String(custData[ci][0]);
     let totalDays=0,milkLtrs=0,curdLtrs=0,milkAmount=0,curdAmount=0;
     for(let di=1;di<delivData.length;di++){
@@ -1465,7 +1465,7 @@ function seedFullDemoMonth() {
 
   let count = 0;
   for (let i = 1; i < custData.length; i++) {
-    if (!custData[i][0] || custData[i][11] !== 'TRUE') continue;
+    if (!custData[i][0] || String(custData[i][11]).toUpperCase() !== 'TRUE') continue;
     const custId   = String(custData[i][0]);
     const custName = custData[i][1];
     const brand    = custData[i][6], quality = custData[i][7];
@@ -1612,7 +1612,7 @@ function getEODSummary(token) {
   const brandTotals = {}; // key: "brand|quality" → { brand, quality, totalMilkQty, totalCurdQty, customers: [] }
   let grandMilkQty = 0, grandCurdQty = 0, grandCost = 0;
   for (let i = 1; i < custData.length; i++) {
-    if (!custData[i][0] || custData[i][11] !== 'TRUE') continue;
+    if (!custData[i][0] || String(custData[i][11]).toUpperCase() !== 'TRUE') continue;
     const custId = String(custData[i][0]);
     let brand, quality, milkQty, curdQty;
     if (customOrders[custId]) {
